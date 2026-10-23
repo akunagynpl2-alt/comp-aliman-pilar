@@ -36,21 +36,20 @@ Untuk pengujian, jalankan `php artisan test`. Database pengujian menggunakan SQL
 
 ### Railway
 
-1. Buat service aplikasi dan database MySQL. Pastikan service web menyajikan direktori `public/` dengan document root yang benar.
-2. Atur variabel lingkungan Laravel (`APP_ENV=production`, `APP_DEBUG=false`, `APP_KEY`, `APP_URL`) dan koneksi MySQL (`DB_CONNECTION=mysql`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`) melalui Variables Railway. Gunakan alamat dan kredensial database privat dari Railway.
-3. Isi kredensial admin awal dan `WHATSAPP_DEFAULT` sebelum seed pertama. Jangan menaruh rahasia pada source code.
-4. Build aset sebagai bagian dari build service:
+1. Buat project Railway tersendiri untuk aplikasi dan service database MySQL; jangan gunakan project milik aplikasi lain.
+2. Hubungkan service aplikasi ke repository ini. `railway.json` mengatur build aset, migrasi otomatis sebelum deploy, dan health check `/up`; Railway Railpack mendeteksi runtime Laravel.
+3. Atur variabel `APP_ENV=production`, `APP_DEBUG=false`, `APP_KEY`, `APP_URL`, `DB_CONNECTION=mysql`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`, dan `LOG_CHANNEL=stderr`. Referensikan kredensial privat dari service MySQL Railway.
+4. Pasang volume persisten pada `storage/app/public` sebelum menerima upload produk, lalu jalankan `php artisan storage:link`.
+5. Isi kredensial admin awal dan `WHATSAPP_DEFAULT` sebagai variable Railway sebelum menjalankan seeder pertama. Jangan menaruh rahasia pada source code.
+6. Build aset dapat dilakukan sebagai bagian dari build service:
 
    ```sh
-   composer install --no-dev --optimize-autoloader
    npm ci
    npm run build
    ```
 
-5. Jalankan migrasi sebagai pre-deploy/release command: `php artisan migrate --force`. Untuk pemasangan pertama saja, jalankan `php artisan db:seed --force` setelah variabel admin tersedia.
-6. Konfigurasikan web server service agar meneruskan request ke `public/index.php`, menerima port yang disediakan Railway, dan menulis log ke stdout/stderr. Jangan menjalankan server development `artisan serve` sebagai server produksi.
-7. File upload disimpan pada disk lokal `public` secara default. Untuk deployment dengan filesystem ephemeral atau beberapa replica, konfigurasi object storage persisten yang kompatibel dengan Laravel sebelum menerima upload.
-8. Jalankan `php artisan storage:link` bila storage lokal digunakan, lalu verifikasi halaman publik, `/admin/login`, sitemap, HTTPS, formulir kontak, dan tautan WhatsApp.
+7. Railway Railpack menangani server web dan port publik; jangan menjalankan server development `artisan serve` sebagai server produksi.
+8. Untuk pemasangan pertama, jalankan seeder setelah variable admin tersedia. Verifikasi halaman publik, `/admin/login`, sitemap, HTTPS, formulir kontak, dan tautan WhatsApp.
 
 ### Shared hosting cPanel
 

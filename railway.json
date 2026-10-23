@@ -1,0 +1,12 @@
+{
+    "$schema": "https://railway.com/railway.schema.json",
+    "build": {
+        "buildCommand": "npm ci && npm run build && php artisan storage:link"
+    },
+    "deploy": {
+        "preDeployCommand": "php artisan migrate --force",
+        "healthcheckPath": "/up",
+        "healthcheckTimeout": 300,
+        "restartPolicyType": "ON_FAILURE"
+    }
+}
