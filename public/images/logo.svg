@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 190" role="img" aria-labelledby="title">
+  <title id="title">Aliman Pilar Production</title>
+  <rect width="600" height="190" fill="#050505"/>
+  <g fill="#ffd700">
+    <path d="m86 25 6 13 14 2-10 10 2 14-12-7-12 7 2-14-10-10 14-2z"/>
+    <path d="m56 37 4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1zM116 37l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1z"/>
+    <path d="M54 151 87 68l33 83h-9l-24-61-24 61zM68 148h38v7H68z"/>
+    <path d="M82 91h10v56H82z"/>
+  </g>
+  <text x="155" y="109" fill="#fff" font-family="Georgia,serif" font-size="42" letter-spacing="3">ALIMAN PILAR</text>
+  <text x="158" y="143" fill="#ffd700" font-family="Arial,sans-serif" font-size="16" letter-spacing="10">PRODUCTION</text>
+</svg>

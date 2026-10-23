@@ -1,0 +1,261 @@
+@import "tailwindcss";
+
+/* ============================================================
+   TAILWIND V4 THEME
+============================================================ */
+@theme {
+    /* Colors */
+    --color-gold:          #FFD700;
+    --color-gold-light:    #FFE600;
+    --color-gold-dark:     #FFB300;
+    --color-gold-50:       #fffbeb;
+    --color-gold-100:      #fef3c7;
+    --color-gold-200:      #fde68a;
+    --color-gold-300:      #fcd34d;
+    --color-gold-400:      #fbbf24;
+    --color-gold-500:      #f59e0b;
+    --color-gold-600:      #d97706;
+    --color-gold-700:      #b45309;
+    --color-charcoal:      #0A0A0A;
+    --color-charcoal-50:   #1a1a1a;
+    --color-charcoal-100:  #111111;
+
+    /* Fonts */
+    --font-heading: 'Playfair Display', Georgia, serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+    /* Shadows */
+    --shadow-gold:    0 0 20px rgba(255, 215, 0, 0.24);
+    --shadow-gold-lg: 0 8px 32px rgba(255, 215, 0, 0.32);
+
+    /* Animations */
+    --animate-fade-up: fadeUp 0.8s ease forwards;
+    --animate-shimmer: shimmer 3s linear infinite;
+}
+
+/* CSS Custom properties for non-Tailwind usage */
+:root {
+    --gold:         #FFD700;
+    --gold-light:   #FFE600;
+    --gold-dark:    #FFB300;
+    --charcoal:     #0A0A0A;
+    --charcoal-50:  #1a1a1a;
+    --charcoal-100: #111111;
+}
+
+/* ============================================================
+   BASE
+============================================================ */
+@layer base {
+    html { scroll-behavior: smooth; }
+    [x-cloak] { display: none !important; }
+
+    body {
+        background-color: #0A0A0A;
+        color: white;
+        font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-feature-settings: "kern" 1, "liga" 1;
+    }
+
+    ::selection {
+        background-color: #FFD700;
+        color: #000;
+    }
+
+    ::-webkit-scrollbar        { width: 5px; }
+    ::-webkit-scrollbar-track  { background: #0A0A0A; }
+    ::-webkit-scrollbar-thumb  {
+        background: linear-gradient(180deg, #FFE600, #FFB300);
+        border-radius: 3px;
+    }
+}
+
+/* ============================================================
+   COMPONENTS
+============================================================ */
+@layer components {
+
+    /* --- Pillar / Editorial markers --- */
+    .pillar-line {
+        @apply border-l-2 border-gold pl-4;
+    }
+
+    .section-number {
+        @apply text-gold/30 text-8xl font-bold leading-none absolute select-none pointer-events-none;
+        font-family: 'Playfair Display', Georgia, serif;
+    }
+
+    /* --- Buttons --- */
+    .btn-gold {
+        @apply inline-flex items-center gap-2
+               bg-gold text-black font-body font-semibold
+               px-6 py-3 tracking-wide
+               transition-all duration-300
+               hover:bg-gold-light hover:shadow-gold
+               active:scale-[0.98];
+    }
+
+    .btn-outline-gold {
+        @apply inline-flex items-center gap-2
+               border border-gold text-gold font-body font-semibold
+               px-6 py-3 tracking-wide
+               transition-all duration-300
+               hover:bg-gold/10 hover:border-gold-light
+               active:scale-[0.98];
+    }
+
+    /* --- Overlay --- */
+    .overlay-dark {
+        @apply absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent;
+    }
+
+    /* --- Section wrappers --- */
+    .section-wrap  { @apply py-20 md:py-28 lg:py-36; }
+    .section-inner { @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8; }
+
+    /* --- Heading helpers --- */
+    .heading-display { @apply font-heading font-bold leading-tight tracking-tight; }
+    .heading-xl      { @apply font-heading font-bold leading-tight tracking-tight text-4xl md:text-5xl lg:text-6xl; }
+    .heading-lg      { @apply font-heading font-bold leading-tight tracking-tight text-3xl md:text-4xl lg:text-5xl; }
+
+    /* --- Gold text gradient --- */
+    .text-gold-gradient {
+        background: linear-gradient(135deg, #FFE600, #FFD700, #FFB300);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* --- Floating WA button --- */
+    .float-wa {
+        @apply fixed bottom-6 right-6 z-50
+               flex items-center gap-2
+               bg-gold text-black font-body font-bold
+               px-5 py-3 shadow-gold-lg
+               transition-all duration-300
+               hover:bg-gold-light hover:scale-105;
+    }
+
+    /* --- Product card --- */
+    .product-card {
+        @apply relative bg-charcoal-100 overflow-hidden
+               border border-white/5
+               transition-all duration-500
+               hover:border-gold/40 hover:shadow-gold;
+    }
+
+    /* --- Form inputs dark theme --- */
+    .form-dark {
+        @apply w-full bg-charcoal-50 border border-white/10 text-white
+               placeholder-white/30 px-4 py-3 font-body text-sm
+               transition-colors duration-200
+               focus:outline-none focus:border-gold focus:bg-charcoal-100;
+    }
+
+    /* --- Badge --- */
+    .badge-gold {
+        @apply inline-block px-3 py-1 text-xs font-body font-semibold
+               tracking-widest uppercase bg-gold/10 text-gold border border-gold/30;
+    }
+
+    /* --- Admin sidebar link --- */
+    .sidebar-link {
+        @apply flex items-center gap-3 px-4 py-3 text-sm font-body font-medium
+               text-white/60 rounded-none transition-all duration-200
+               hover:text-gold hover:bg-white/5 hover:pl-6;
+    }
+    .sidebar-link.active {
+        @apply text-gold bg-gold/10 border-l-2 border-gold pl-6;
+    }
+}
+
+/* ============================================================
+   UTILITIES
+============================================================ */
+@layer utilities {
+    .text-balance { text-wrap: balance; }
+
+    /* Scroll reveal */
+    .reveal        { opacity: 0; transform: translateY(40px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Gold shimmer text */
+    .gold-shimmer {
+        background: linear-gradient(90deg, #FFB300 0%, #FFE600 40%, #FFD700 60%, #FFB300 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 3s linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            scroll-behavior: auto !important;
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+
+/* ============================================================
+   KEYFRAMES
+============================================================ */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+    from { background-position: 200% center; }
+    to   { background-position: -200% center; }
+}
+
+/* ============================================================
+   HERO ANIMATIONS
+============================================================ */
+.hero-word {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 0.8s ease forwards;
+}
+.hero-word:nth-child(1) { animation-delay: 0.1s; }
+.hero-word:nth-child(2) { animation-delay: 0.3s; }
+.hero-word:nth-child(3) { animation-delay: 0.5s; }
+.hero-word:nth-child(4) { animation-delay: 0.7s; }
+
+/* Pilar grow for vertical line ornaments */
+.pilar-grow { height: 0; transition: height 1.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.pilar-grow.visible { height: 100%; }
+
+/* ============================================================
+   MASONRY / PORTFOLIO GRID
+============================================================ */
+.masonry-grid {
+    columns: 1;
+    column-gap: 1rem;
+}
+@media (min-width: 640px)  { .masonry-grid { columns: 2; } }
+@media (min-width: 1024px) { .masonry-grid { columns: 3; } }
+
+.masonry-item {
+    break-inside: avoid;
+    margin-bottom: 1rem;
+}
+
+/* ============================================================
+   SCROLL REVEAL INIT (JS-driven)
+============================================================ */
+.sr-init {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.sr-init.sr-visible {
+    opacity: 1;
+    transform: none;
+}
