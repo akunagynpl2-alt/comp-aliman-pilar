@@ -23,7 +23,9 @@ class Testimonial extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('avatar')->singleFile()->useDisk('public');
+        $this->addMediaCollection('avatar')
+            ->singleFile()
+            ->useDisk(config('media-library.disk_name', 'public'));
     }
 
     public function scopeActive($query)

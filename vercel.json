@@ -1,0 +1,51 @@
+{
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "version": 2,
+    "builds": [
+        {
+            "src": "api/index.php",
+            "use": "vercel-php@0.9.0",
+            "config": {
+                "maxDuration": 60,
+                "memory": 1024
+            }
+        },
+        {
+            "src": "public/**",
+            "use": "@vercel/static"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(build|images)/(.*)",
+            "dest": "public/$1/$2"
+        },
+        {
+            "src": "/(favicon\\.ico|robots\\.txt)",
+            "dest": "public/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "api/index.php"
+        }
+    ],
+    "env": {
+        "APP_ENV": "production",
+        "APP_DEBUG": "false",
+        "APP_CONFIG_CACHE": "/tmp/config.php",
+        "APP_EVENTS_CACHE": "/tmp/events.php",
+        "APP_PACKAGES_CACHE": "/tmp/packages.php",
+        "APP_ROUTES_CACHE": "/tmp/routes.php",
+        "APP_SERVICES_CACHE": "/tmp/services.php",
+        "CACHE_STORE": "database",
+        "DB_CONNECTION": "mysql",
+        "FILESYSTEM_DISK": "s3",
+        "LOG_CHANNEL": "stderr",
+        "MEDIA_CONVERSIONS_ENABLED": "false",
+        "MEDIA_DISK": "s3",
+        "MEDIA_TEMPORARY_DIRECTORY_PATH": "/tmp/media-library/temp",
+        "QUEUE_CONNECTION": "sync",
+        "SESSION_DRIVER": "database",
+        "VIEW_COMPILED_PATH": "/tmp/views"
+    }
+}

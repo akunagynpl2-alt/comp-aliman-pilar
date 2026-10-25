@@ -16,7 +16,9 @@ class Client extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('logo')->singleFile()->useDisk('public');
+        $this->addMediaCollection('logo')
+            ->singleFile()
+            ->useDisk(config('media-library.disk_name', 'public'));
     }
 
     public function scopeActive($query)

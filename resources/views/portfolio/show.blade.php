@@ -44,7 +44,7 @@
                 <h2 class="font-heading text-3xl text-white">Momen pilihan</h2>
                 <div class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach($portfolio->getMedia('images') as $image)
-                        <img src="{{ $image->getUrl('large') }}" alt="Galeri {{ $portfolio->title }}" class="aspect-[4/3] w-full object-cover" loading="lazy">
+                        <img src="{{ $image->getUrl(config('media.conversions_enabled', true) ? 'large' : '') }}" alt="Galeri {{ $portfolio->title }}" class="aspect-[4/3] w-full object-cover" loading="lazy">
                     @endforeach
                 </div>
             </div>

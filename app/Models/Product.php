@@ -35,15 +35,19 @@ class Product extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('images')
-            ->useDisk('public');
+            ->useDisk(config('media-library.disk_name', 'public'));
 
         $this->addMediaCollection('thumbnail')
             ->singleFile()
-            ->useDisk('public');
+            ->useDisk(config('media-library.disk_name', 'public'));
     }
 
     public function registerMediaConversions(?Media $media = null): void
     {
+        if (! config('media.conversions_enabled', true)) {
+            return;
+        }
+
         $this->addMediaConversion('thumb')
             ->width(600)
             ->height(450)
@@ -86,7 +90,7 @@ class Product extends Model implements HasMedia
     {
         $media = $this->getFirstMedia('thumbnail') ?? $this->getFirstMedia('images');
         if ($media) {
-            return $media->getUrl($conversion);
+            return $media->getUrl(config('media.conversions_enabled', true) ? $conversion : '');
         }
         return asset('images/placeholder-product.svg');
     }

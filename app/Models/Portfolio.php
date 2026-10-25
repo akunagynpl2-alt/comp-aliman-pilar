@@ -36,12 +36,17 @@ class Portfolio extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('images')->useDisk('public');
-        $this->addMediaCollection('cover')->singleFile()->useDisk('public');
+        $disk = config('media-library.disk_name', 'public');
+        $this->addMediaCollection('images')->useDisk($disk);
+        $this->addMediaCollection('cover')->singleFile()->useDisk($disk);
     }
 
     public function registerMediaConversions(?Media $media = null): void
     {
+        if (! config('media.conversions_enabled', true)) {
+            return;
+        }
+
         $this->addMediaConversion('thumb')
             ->width(800)->height(600)->format('webp')->quality(80)
             ->performOnCollections('images', 'cover');
@@ -70,7 +75,7 @@ class Portfolio extends Model implements HasMedia
     {
         $media = $this->getFirstMedia('cover') ?? $this->getFirstMedia('images');
         if ($media) {
-            return $media->getUrl($conversion);
+            return $media->getUrl(config('media.conversions_enabled', true) ? $conversion : '');
         }
         return asset('images/placeholder-product.svg');
     }

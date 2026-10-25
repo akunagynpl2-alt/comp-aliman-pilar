@@ -38,11 +38,17 @@ class BlogPost extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('featured_image')->singleFile()->useDisk('public');
+        $this->addMediaCollection('featured_image')
+            ->singleFile()
+            ->useDisk(config('media-library.disk_name', 'public'));
     }
 
     public function registerMediaConversions(?Media $media = null): void
     {
+        if (! config('media.conversions_enabled', true)) {
+            return;
+        }
+
         $this->addMediaConversion('thumb')
             ->width(800)->height(500)->format('webp')->quality(80);
         $this->addMediaConversion('large')
@@ -74,7 +80,9 @@ class BlogPost extends Model implements HasMedia
     public function getFeaturedImageUrl(string $conversion = 'thumb'): string
     {
         $media = $this->getFirstMedia('featured_image');
-        return $media ? $media->getUrl($conversion) : asset('images/placeholder-product.svg');
+        return $media
+            ? $media->getUrl(config('media.conversions_enabled', true) ? $conversion : '')
+            : asset('images/placeholder-product.svg');
     }
 
     public function getReadingTimeAttribute(): int

@@ -51,6 +51,20 @@ Untuk pengujian, jalankan `php artisan test`. Database pengujian menggunakan SQL
 7. Railway Railpack menangani server web dan port publik; jangan menjalankan server development `artisan serve` sebagai server produksi.
 8. Untuk pemasangan pertama, jalankan seeder setelah variable admin tersedia. Verifikasi halaman publik, `/admin/login`, sitemap, HTTPS, formulir kontak, dan tautan WhatsApp.
 
+### Vercel (runtime PHP komunitas)
+
+Vercel tidak menyediakan runtime Laravel/PHP resmi. Konfigurasi project ini menggunakan `vercel-php` dari komunitas Vercel. Runtime tersebut tidak menyediakan ekstensi GD, sehingga konversi gambar dinonaktifkan di deployment Vercel; gambar asli tetap dapat diunggah dan disimpan pada object storage S3-compatible.
+
+1. Buat **project Vercel baru** pada workspace yang dipilih dan impor repository `akunagynpl2-alt/comp-aliman-pilar` dari branch `main`. Tetapkan Root Directory ke direktori aplikasi (root repository); jangan menghubungkan deployment ke project Kaizen yang sudah ada.
+2. Siapkan database MySQL eksternal yang dapat diakses dari Vercel dan bucket S3-compatible dengan URL publik untuk gambar. Vercel filesystem lokal bersifat sementara; jangan gunakan untuk sesi atau gambar upload.
+3. Tambahkan Environment Variables berikut pada project Vercel. Masukkan rahasia hanya melalui dashboard/CLI Vercel, bukan ke repository atau chat:
+   - Laravel: `APP_KEY`, `APP_URL`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD`.
+   - S3-compatible storage: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `AWS_BUCKET`, `AWS_URL`; untuk provider selain AWS, isi juga `AWS_ENDPOINT` dan atur `AWS_USE_PATH_STYLE_ENDPOINT` sesuai provider.
+   - Untuk membuat admin pertama kali, isi `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PHONE`, dan `ADMIN_PASSWORD` saat menjalankan seeder. Hapus nilai sandi dari environment setelah admin dibuat.
+4. `vercel.json` mengatur routing PHP, asset statis, sesi/cache berbasis database, log ke stderr, direktori sementara di `/tmp`, disk media S3, dan konversi gambar yang dinonaktifkan. Build command Composer menjalankan `npm ci` dan `npm run build`.
+5. Setelah environment variables tersedia, jalankan migrasi dan seeder satu kali dengan koneksi ke database production (`php artisan migrate --force` dan `php artisan db:seed --force`). Pastikan bucket dapat menerima unggahan sebelum seeding foto produk.
+6. Deploy dan verifikasi halaman publik, login admin, upload foto asli, formulir kontak, sitemap, dan tautan WhatsApp.
+
 ### Shared hosting cPanel
 
 1. Pilih hosting dengan PHP 8.2+, ekstensi yang diperlukan, Composer, akses SSH/Terminal, MySQL, dan document root domain/subdomain yang dapat diarahkan ke folder `public` Laravel.

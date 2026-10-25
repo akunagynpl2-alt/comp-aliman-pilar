@@ -12,7 +12,7 @@
                 @if($product->getMedia('images')->count() > 1)
                     <div class="mt-3 grid grid-cols-4 gap-3">
                         @foreach($product->getMedia('images') as $image)
-                            <img src="{{ $image->getUrl('thumb') }}" alt="Galeri {{ $product->name }}" class="aspect-square w-full border border-white/10 object-cover" loading="lazy">
+                            <img src="{{ $image->getUrl(config('media.conversions_enabled', true) ? 'thumb' : '') }}" alt="Galeri {{ $product->name }}" class="aspect-square w-full border border-white/10 object-cover" loading="lazy">
                         @endforeach
                     </div>
                 @endif
