@@ -13,4 +13,13 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    build: {
+        rollupOptions: {
+            output: {
+                assetFileNames: (assetInfo) => assetInfo.name?.endsWith('.css')
+                    ? 'assets/[name][extname]'
+                    : 'assets/[name]-[hash][extname]',
+            },
+        },
+    },
 });
