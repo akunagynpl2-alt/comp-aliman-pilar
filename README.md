@@ -61,7 +61,7 @@ Vercel tidak menyediakan runtime Laravel/PHP resmi. Konfigurasi project ini meng
    - Laravel: `APP_KEY`, `APP_URL`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, dan `DB_PASSWORD`.
    - S3-compatible storage: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_DEFAULT_REGION`, `AWS_BUCKET`, `AWS_URL`; untuk provider selain AWS, isi juga `AWS_ENDPOINT` dan atur `AWS_USE_PATH_STYLE_ENDPOINT` sesuai provider.
    - Untuk membuat admin pertama kali, isi `ADMIN_NAME`, `ADMIN_EMAIL`, `ADMIN_PHONE`, dan `ADMIN_PASSWORD` saat menjalankan seeder. Hapus nilai sandi dari environment setelah admin dibuat.
-4. `vercel.json` mengatur routing PHP, asset statis, sesi/cache berbasis database, log ke stderr, direktori sementara di `/tmp`, disk media S3, dan konversi gambar yang dinonaktifkan. Build command Composer menjalankan `npm ci` dan `npm run build`.
+4. `vercel.json` mengatur routing PHP, asset statis, sesi/cache berbasis database, log ke stderr, direktori sementara di `/tmp`, disk media S3, dan konversi gambar yang dinonaktifkan. Aplikasi mempercayai header proxy Vercel agar URL aset memakai HTTPS. Build command Composer menjalankan `npm ci` dan `npm run build`.
    Output `public/build` harus tersedia sebagai input untuk static builder Vercel; setelah perubahan frontend, jalankan `npm run build` dan sertakan hasilnya dalam commit.
 5. Setelah environment variables tersedia, jalankan migrasi dan seeder satu kali dengan koneksi ke database production (`php artisan migrate --force` dan `php artisan db:seed --force`). Pastikan bucket dapat menerima unggahan sebelum seeding foto produk.
 6. Deploy dan verifikasi halaman publik, login admin, upload foto asli, formulir kontak, sitemap, dan tautan WhatsApp.
