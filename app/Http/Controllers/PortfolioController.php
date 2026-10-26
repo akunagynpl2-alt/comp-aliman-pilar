@@ -20,7 +20,7 @@ class PortfolioController extends Controller
 
         $portfolios  = $query->paginate(9)->withQueryString();
         $eventTypes = Portfolio::query()
-            ->where('is_active', true)
+            ->whereRaw('is_active IS TRUE')
             ->whereNotNull('event_type')
             ->select('event_type')
             ->distinct()

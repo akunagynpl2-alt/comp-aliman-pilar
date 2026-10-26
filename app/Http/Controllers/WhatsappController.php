@@ -24,7 +24,11 @@ class WhatsappController extends Controller
     public function redirect(Request $request)
     {
         $validated = $request->validate([
-            'number_id'    => ['required', Rule::exists('whatsapp_numbers', 'id')->where('is_active', true)],
+            'number_id'    => [
+                'required',
+                Rule::exists('whatsapp_numbers', 'id')
+                    ->where(fn ($query) => $query->whereRaw('is_active IS TRUE')),
+            ],
             'template_key' => ['required', 'string', 'in:product,portfolio,general,contact'],
             'vars'         => ['nullable', 'array'],
         ]);

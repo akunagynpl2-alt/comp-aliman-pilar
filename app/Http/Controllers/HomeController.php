@@ -19,7 +19,7 @@ class HomeController extends Controller
         $hasProductPhoto = fn ($query) => $query->whereHas('media', fn ($media) => $media
             ->whereIn('collection_name', ['images', 'thumbnail']));
         $productsWithPhotos = Product::query()
-            ->where('is_active', true)
+            ->whereRaw('is_active IS TRUE')
             ->whereHas('media', fn ($query) => $query->whereIn('collection_name', ['images', 'thumbnail']));
 
         $categories = Category::active()

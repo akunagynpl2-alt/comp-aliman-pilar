@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\DatabaseBoolean;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -12,7 +13,7 @@ class Client extends Model implements HasMedia
 
     protected $fillable = ['name', 'logo_path', 'website', 'is_active', 'sort_order'];
 
-    protected $casts = ['is_active' => 'boolean'];
+    protected $casts = ['is_active' => DatabaseBoolean::class];
 
     public function registerMediaCollections(): void
     {
@@ -23,6 +24,6 @@ class Client extends Model implements HasMedia
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true)->orderBy('sort_order');
+        return $query->whereRaw('is_active IS TRUE')->orderBy('sort_order');
     }
 }

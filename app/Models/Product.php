@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\DatabaseBoolean;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
@@ -19,8 +20,8 @@ class Product extends Model implements HasMedia
     ];
 
     protected $casts = [
-        'is_featured' => 'boolean',
-        'is_active'   => 'boolean',
+        'is_featured' => DatabaseBoolean::class,
+        'is_active'   => DatabaseBoolean::class,
     ];
 
     protected static function booted(): void
@@ -70,12 +71,12 @@ class Product extends Model implements HasMedia
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true)->orderBy('sort_order')->orderBy('name');
+        return $query->whereRaw('is_active IS TRUE')->orderBy('sort_order')->orderBy('name');
     }
 
     public function scopeFeatured($query)
     {
-        return $query->where('is_featured', true)->where('is_active', true);
+        return $query->whereRaw('is_featured IS TRUE')->whereRaw('is_active IS TRUE');
     }
 
     public function getRouteKeyName(): string

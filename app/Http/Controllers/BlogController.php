@@ -28,7 +28,7 @@ class BlogController extends Controller
 
         $posts      = $query->paginate(9)->withQueryString();
         $categories = BlogCategory::withCount(['posts' => fn($q) => $q->published()])->get();
-        $featured   = BlogPost::with('blogCategory')->published()->where('is_featured', true)->first();
+        $featured   = BlogPost::with('blogCategory')->published()->whereRaw('is_featured IS TRUE')->first();
 
         SEOMeta::setTitle('Blog & Tips Event | Aliman Pilar Production');
         SEOMeta::setDescription('Artikel dan tips seputar event organizer, sewa perlengkapan event, dan inspirasi acara dari pakarnya.');

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\DatabaseBoolean;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -43,7 +44,7 @@ class WhatsappNumber extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'is_active'  => 'boolean',
+        'is_active'  => DatabaseBoolean::class,
         'sort_order' => 'integer',
     ];
 
@@ -59,7 +60,7 @@ class WhatsappNumber extends Model
      */
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('is_active', true)->orderBy('sort_order');
+        return $query->whereRaw('is_active IS TRUE')->orderBy('sort_order');
     }
 
     // -------------------------------------------------------------------------

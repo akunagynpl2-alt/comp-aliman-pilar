@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\DatabaseBoolean;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -17,8 +18,8 @@ class Testimonial extends Model implements HasMedia
 
     protected $casts = [
         'rating'      => 'integer',
-        'is_featured' => 'boolean',
-        'is_active'   => 'boolean',
+        'is_featured' => DatabaseBoolean::class,
+        'is_active'   => DatabaseBoolean::class,
     ];
 
     public function registerMediaCollections(): void
@@ -30,11 +31,11 @@ class Testimonial extends Model implements HasMedia
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true)->orderBy('sort_order');
+        return $query->whereRaw('is_active IS TRUE')->orderBy('sort_order');
     }
 
     public function scopeFeatured($query)
     {
-        return $query->where('is_featured', true)->where('is_active', true);
+        return $query->whereRaw('is_featured IS TRUE')->whereRaw('is_active IS TRUE');
     }
 }

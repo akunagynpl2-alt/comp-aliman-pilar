@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\DatabaseBoolean;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
@@ -19,8 +20,8 @@ class BlogPost extends Model implements HasMedia
     ];
 
     protected $casts = [
-        'is_featured'  => 'boolean',
-        'is_published' => 'boolean',
+        'is_featured'  => DatabaseBoolean::class,
+        'is_published' => DatabaseBoolean::class,
         'published_at' => 'datetime',
     ];
 
@@ -67,7 +68,7 @@ class BlogPost extends Model implements HasMedia
 
     public function scopePublished($query)
     {
-        return $query->where('is_published', true)
+        return $query->whereRaw('is_published IS TRUE')
                      ->where('published_at', '<=', now())
                      ->orderBy('published_at', 'desc');
     }

@@ -23,7 +23,7 @@ class DashboardController extends Controller
             'total_portfolios'  => Portfolio::count(),
             'total_blog_posts'  => BlogPost::count(),
             'total_testimonials'=> Testimonial::count(),
-            'unread_messages'   => ContactMessage::where('is_read', false)->count(),
+            'unread_messages'   => ContactMessage::query()->whereRaw('is_read IS FALSE')->count(),
         ];
 
         return view('admin.dashboard', compact('stats'));

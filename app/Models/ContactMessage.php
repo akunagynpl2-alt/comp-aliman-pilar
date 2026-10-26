@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\DatabaseBoolean;
 use Illuminate\Database\Eloquent\Model;
 
 class ContactMessage extends Model
@@ -13,13 +14,13 @@ class ContactMessage extends Model
 
     protected $casts = [
         'event_date' => 'date',
-        'is_read'    => 'boolean',
+        'is_read'    => DatabaseBoolean::class,
         'read_at'    => 'datetime',
     ];
 
     public function scopeUnread($query)
     {
-        return $query->where('is_read', false);
+        return $query->whereRaw('is_read IS FALSE');
     }
 
     public function markAsRead(): void
