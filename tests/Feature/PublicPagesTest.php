@@ -2,23 +2,24 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\BlogCategory;
+use App\Models\BlogPost;
+use App\Models\Category;
+use App\Models\Portfolio;
+use App\Models\Product;
+use App\Models\User;
 use Database\Seeders\BlogSeeder;
 use Database\Seeders\CategorySeeder;
 use Database\Seeders\ClientSeeder;
 use Database\Seeders\PortfolioSeeder;
-use Database\Seeders\ProductSeeder;
 use Database\Seeders\ProductPhotoSeeder;
+use Database\Seeders\ProductSeeder;
 use Database\Seeders\SiteSettingSeeder;
 use Database\Seeders\TestimonialSeeder;
 use Database\Seeders\WhatsappSeeder;
-use App\Models\BlogPost;
-use App\Models\BlogCategory;
-use App\Models\Portfolio;
-use App\Models\Product;
-use App\Models\User;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
+use Tests\TestCase;
 
 class PublicPagesTest extends TestCase
 {
@@ -64,6 +65,54 @@ class PublicPagesTest extends TestCase
             'name' => 'Nadia Event',
             'event_location' => 'Jakarta',
         ]);
+    }
+
+    public function test_products_without_images_are_hidden_from_the_public_catalog(): void
+    {
+        $this->withoutVite();
+        $category = Category::create([
+            'name' => 'Peralatan',
+            'slug' => 'peralatan',
+            'is_active' => true,
+        ]);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Produk Tanpa Foto',
+            'slug' => 'produk-tanpa-foto',
+            'description' => 'Produk yang belum memiliki foto.',
+            'is_active' => true,
+        ]);
+
+        $this->get(route('catalog.index'))
+            ->assertOk()
+            ->assertDontSee('Produk Tanpa Foto');
+        $this->get(route('catalog.show', $product))->assertNotFound();
+    }
+
+    public function test_inactive_portfolios_and_scheduled_articles_are_not_publicly_accessible(): void
+    {
+        $this->withoutVite();
+        $portfolio = Portfolio::create([
+            'title' => 'Acara Arsip',
+            'slug' => 'acara-arsip',
+            'event_type' => 'Pameran',
+            'location' => 'Jakarta',
+            'event_date' => '2025-01-15',
+            'description' => 'Portofolio nonaktif.',
+            'is_active' => false,
+        ]);
+        $post = BlogPost::create([
+            'user_id' => User::factory()->create()->id,
+            'title' => 'Artikel Terjadwal',
+            'slug' => 'artikel-terjadwal',
+            'content' => 'Artikel belum terbit.',
+            'is_published' => true,
+            'published_at' => now()->addDay(),
+        ]);
+
+        $this->get(route('portfolio.show', $portfolio))->assertNotFound();
+        $this->get(route('blog.show', $post))->assertNotFound();
+        $this->get('/api/whatsapp/numbers')->assertNotFound();
     }
 
     public function test_seeded_public_catalog_content_and_sitemap_render(): void
@@ -115,7 +164,7 @@ class PublicPagesTest extends TestCase
             ->assertOk()
             ->assertSee('Peta lokasi Aliman Pilar Production')
             ->assertSee('Jalan Serut No.78 Pondok Ranggon, Cipayung Jakarta Timur');
-        $this->get(route('catalog.show', Product::firstOrFail()))->assertOk();
+        $this->get(route('catalog.show', Product::withImages()->firstOrFail()))->assertOk();
         $this->get(route('portfolio.index'))->assertOk();
         $this->get(route('portfolio.show', Portfolio::firstOrFail()))->assertOk();
         $this->get(route('blog.show', BlogPost::published()->firstOrFail()))->assertOk();

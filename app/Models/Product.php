@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\DatabaseBoolean;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Spatie\MediaLibrary\HasMedia;
@@ -21,7 +22,7 @@ class Product extends Model implements HasMedia
 
     protected $casts = [
         'is_featured' => DatabaseBoolean::class,
-        'is_active'   => DatabaseBoolean::class,
+        'is_active' => DatabaseBoolean::class,
     ];
 
     protected static function booted(): void
@@ -79,6 +80,12 @@ class Product extends Model implements HasMedia
         return $query->whereRaw('is_featured IS TRUE')->whereRaw('is_active IS TRUE');
     }
 
+    public function scopeWithImages(Builder $query): Builder
+    {
+        return $query->whereHas('media', fn (Builder $media) => $media
+            ->whereIn('collection_name', ['images', 'thumbnail']));
+    }
+
     public function getRouteKeyName(): string
     {
         return 'slug';
@@ -93,6 +100,7 @@ class Product extends Model implements HasMedia
         if ($media) {
             return $media->getUrl(config('media.conversions_enabled', true) ? $conversion : '');
         }
+
         return asset('images/placeholder-product.svg');
     }
 
@@ -102,8 +110,8 @@ class Product extends Model implements HasMedia
     public function getWhatsappMessage(): string
     {
         return WhatsappTemplate::render('product', [
-            'product_name'     => $this->name,
-            'category_name'    => $this->category->name ?? '',
+            'product_name' => $this->name,
+            'category_name' => $this->category->name ?? '',
             'product_capacity' => $this->capacity ?? '',
         ]);
     }

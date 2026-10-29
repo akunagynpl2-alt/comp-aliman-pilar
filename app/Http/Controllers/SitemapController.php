@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
+use App\Models\BlogPost;
 use App\Models\Category;
 use App\Models\Portfolio;
-use App\Models\BlogPost;
+use App\Models\Product;
 use Spatie\Sitemap\Sitemap;
 use Spatie\Sitemap\Tags\Url;
 
@@ -19,7 +19,7 @@ class SitemapController extends Controller
         $staticPages = [
             ['url' => route('home'),          'priority' => 1.0,  'changefreq' => 'weekly'],
             ['url' => route('catalog.index'), 'priority' => 0.9,  'changefreq' => 'weekly'],
-            ['url' => route('portfolio.index'),'priority' => 0.8, 'changefreq' => 'weekly'],
+            ['url' => route('portfolio.index'), 'priority' => 0.8, 'changefreq' => 'weekly'],
             ['url' => route('blog.index'),    'priority' => 0.7,  'changefreq' => 'daily'],
             ['url' => route('about'),         'priority' => 0.6,  'changefreq' => 'monthly'],
             ['url' => route('how-to-order'),  'priority' => 0.7,  'changefreq' => 'monthly'],
@@ -35,13 +35,18 @@ class SitemapController extends Controller
         }
 
         // Categories
-        foreach (Category::active()->get() as $category) {
+        foreach (Category::active()
+            ->whereHas('activeProducts', fn ($query) => $query->withImages())
+            ->get() as $category) {
             $sitemap->add(Url::create(route('catalog.index', ['kategori' => $category->slug]))
                 ->setPriority(0.8)->setChangeFrequency('weekly'));
         }
 
         // Products
-        foreach (Product::active()->get() as $product) {
+        foreach (Product::active()
+            ->withImages()
+            ->whereHas('category', fn ($query) => $query->whereRaw('is_active IS TRUE'))
+            ->get() as $product) {
             $sitemap->add(Url::create(route('catalog.show', $product->slug))
                 ->setLastModificationDate($product->updated_at)
                 ->setPriority(0.8)->setChangeFrequency('monthly'));

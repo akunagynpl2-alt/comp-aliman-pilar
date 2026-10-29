@@ -48,13 +48,14 @@ class ProductController extends Controller
         return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil ditambahkan.');
     }
 
-    public function edit(Product $product): View
+    public function edit(string $product): View
     {
-        return $this->form($product);
+        return $this->form(Product::findOrFail($product));
     }
 
-    public function update(Request $request, Product $product): RedirectResponse
+    public function update(Request $request, string $product): RedirectResponse
     {
+        $product = Product::findOrFail($product);
         $data = $this->validatedData($request, $product);
         $images = $data['images'] ?? [];
         unset($data['images']);
@@ -64,15 +65,16 @@ class ProductController extends Controller
         return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil diperbarui.');
     }
 
-    public function destroy(Product $product): RedirectResponse
+    public function destroy(string $product): RedirectResponse
     {
-        $product->delete();
+        Product::findOrFail($product)->delete();
 
         return redirect()->route('admin.produk.index')->with('success', 'Produk berhasil dihapus.');
     }
 
-    public function deleteMedia(Product $product, Media $media): RedirectResponse
+    public function deleteMedia(string $product, Media $media): RedirectResponse
     {
+        $product = Product::findOrFail($product);
         abort_unless(
             $media->model_id === $product->id
             && $media->model_type === $product::class
@@ -87,9 +89,15 @@ class ProductController extends Controller
 
     private function validatedData(Request $request, ?Product $product = null): array
     {
-        return $request->validate([
+        $slug = $request->input('slug');
+        if (! is_string($slug) || trim($slug) === '') {
+            $slug = $product?->slug ?? Str::slug((string) $request->input('name', ''));
+        }
+        $request->merge(['slug' => $slug]);
+
+        $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'alpha_dash', 'max:255', Rule::unique('products', 'slug')->ignore($product?->id)],
+            'slug' => ['required', 'alpha_dash', 'max:255', Rule::unique('products', 'slug')->ignore($product?->id)],
             'category_id' => ['required', 'exists:categories,id'],
             'description' => ['required', 'string', 'max:10000'],
             'specifications' => ['nullable', 'string', 'max:5000'],
@@ -102,12 +110,12 @@ class ProductController extends Controller
             'meta_description' => ['nullable', 'string', 'max:160'],
             'images' => ['nullable', 'array', 'max:10'],
             'images.*' => ['image', 'mimes:jpeg,png,webp', 'max:4096'],
-        ]) + [
-            'slug' => $request->input('slug') ?: Str::slug($request->input('name')),
-            'is_featured' => $request->boolean('is_featured'),
-            'is_active' => $request->boolean('is_active'),
-            'sort_order' => $request->integer('sort_order', 0),
-        ];
+        ]);
+        $data['is_featured'] = $request->boolean('is_featured');
+        $data['is_active'] = $request->boolean('is_active');
+        $data['sort_order'] = $request->integer('sort_order', 0);
+
+        return $data;
     }
 
     private function storeImages(Product $product, array $images): void

@@ -47,7 +47,10 @@
    BASE
 ============================================================ */
 @layer base {
-    html { scroll-behavior: smooth; }
+    html {
+        scroll-behavior: smooth;
+        overflow-x: clip;
+    }
     [x-cloak] { display: none !important; }
 
     body {

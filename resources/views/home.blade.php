@@ -16,7 +16,7 @@
                 <a href="{{ route('catalog.index') }}" class="btn-gold justify-center">Jelajahi Produk <span aria-hidden="true">&rarr;</span></a>
                 <x-whatsapp-cta class="btn-outline-gold justify-center" label="Pesan via WhatsApp" message="Halo Aliman Pilar Production, saya ingin berkonsultasi untuk kebutuhan event. Mohon informasi lebih lanjut." />
             </div>
-            <div class="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-white/10 pt-5 text-xs uppercase tracking-[.15em] text-white/45">
+            <div class="mt-12 flex flex-wrap gap-x-8 gap-y-3 border-t border-white/[.06] pt-5 text-xs uppercase tracking-[.15em] text-white/45">
                 <span>Corporate</span><span>Pameran</span><span>Wedding</span><span>Konser</span><span>Turnamen</span><span>Festival</span>
             </div>
         </div>
@@ -78,7 +78,7 @@
                 @php
                     $categoryProduct = $category->activeProducts->first();
                 @endphp
-                <a href="{{ route('catalog.index', ['kategori' => $category->slug]) }}" class="{{ in_array($index % 7, [0, 5], true) ? 'row-span-2' : '' }} group relative overflow-hidden border border-white/10 bg-charcoal-100">
+                <a href="{{ route('catalog.index', ['kategori' => $category->slug]) }}" class="{{ in_array($index % 7, [0, 5], true) ? 'row-span-2' : '' }} group relative overflow-hidden border border-white/[.06] bg-charcoal-100">
                     <img src="{{ $categoryProduct->getThumbnailUrl('large') }}" alt="{{ $categoryProduct->name }}" class="absolute inset-0 h-full w-full object-cover opacity-55 transition duration-700 group-hover:scale-105 group-hover:opacity-80" loading="lazy">
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent"></div>
                     <div class="absolute inset-x-0 bottom-0 border-l-2 border-gold p-4 md:p-5">
@@ -100,7 +100,7 @@
         </div>
         <div class="space-y-5">
             @forelse($featuredProducts as $index => $product)
-                <article class="grid overflow-hidden border border-white/10 transition hover:border-gold/40 md:grid-cols-2">
+                <article class="grid overflow-hidden border border-white/[.06] transition hover:border-gold/40 md:grid-cols-2">
                     <a href="{{ route('catalog.show', $product) }}" class="{{ $index % 2 ? 'md:order-2' : '' }} relative block min-h-64 overflow-hidden bg-charcoal">
                         <img src="{{ $product->getThumbnailUrl('large') }}" alt="{{ $product->name }}" class="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-105" loading="lazy">
                         @if($product->is_featured)
@@ -119,7 +119,7 @@
                     </div>
                 </article>
             @empty
-                <p class="border border-white/10 p-8 text-white/55">Produk unggulan akan ditampilkan setelah katalog dikelola.</p>
+                <p class="border border-white/[.06] p-8 text-white/55">Produk unggulan akan ditampilkan setelah katalog dikelola.</p>
             @endforelse
         </div>
     </div>
@@ -148,7 +148,7 @@
                 @endforeach
             </div>
         @else
-            <p class="border border-white/10 p-8 text-white/55">Dokumentasi akan ditambahkan setelah portofolio tersedia.</p>
+            <p class="border border-white/[.06] p-8 text-white/55">Dokumentasi akan ditambahkan setelah portofolio tersedia.</p>
         @endif
     </div>
 </section>
@@ -163,7 +163,7 @@
         </div>
         <div class="grid gap-6 sm:grid-cols-2">
             @foreach([['01','Ceritakan acara'],['02','Pilih peralatan'],['03','Cek jadwal & teknis'],['04','Sepakati pelaksanaan']] as [$n,$label])
-                <div class="flex items-center gap-4 border-b border-white/10 pb-4"><span class="font-heading text-3xl text-gold">{{ $n }}</span><span class="text-sm text-white/75">{{ $label }}</span></div>
+                <div class="flex items-center gap-4 border-b border-white/[.06] pb-4"><span class="font-heading text-3xl text-gold">{{ $n }}</span><span class="text-sm text-white/75">{{ $label }}</span></div>
             @endforeach
             <div class="sm:col-span-2"><x-whatsapp-cta class="btn-gold text-xs" label="Mulai percakapan WhatsApp" message="Halo Aliman Pilar Production, saya ingin mendiskusikan kebutuhan event saya." /></div>
         </div>
@@ -188,7 +188,7 @@
 @endif
 
 @if($clients->isNotEmpty())
-<section class="border-y border-white/10 bg-charcoal-100 py-12">
+<section class="border-y border-white/[.06] bg-charcoal-100 py-12">
     <div class="section-inner">
         <p class="mb-7 text-center text-[.6rem] uppercase tracking-[.3em] text-white/40">Klien & mitra — ganti contoh sebelum publikasi</p>
         <div class="flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
@@ -213,7 +213,7 @@
                     <p class="text-[.65rem] uppercase tracking-[.22em] text-gold">Cakupan layanan</p>
                     <p class="mt-3 text-sm leading-6 text-white/75">{{ $settings['service_areas'] ?: 'Hubungi tim kami untuk mengecek jangkauan layanan.' }}</p>
                 </div>
-                <div class="min-w-0 border-t border-white/10 pt-5 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0">
+                <div class="min-w-0 border-t border-white/[.06] pt-5 sm:border-l sm:border-t-0 sm:pl-6 sm:pt-0">
                     <p class="text-[.65rem] uppercase tracking-[.22em] text-gold">Alamat kantor</p>
                     <p class="mt-3 text-sm leading-6 text-white/75">{{ $settings['address'] ?: 'Alamat kantor belum diatur.' }}</p>
                     @if($settings['address'])
@@ -227,7 +227,7 @@
                 <iframe
                     title="Peta lokasi Aliman Pilar Production"
                     src="{{ $settings['google_maps_embed'] ?: 'https://www.google.com/maps?q='.urlencode($settings['address']).'&output=embed' }}"
-                    class="h-64 w-full border-y border-white/10 bg-black sm:h-72"
+                    class="h-64 w-full border-y border-white/[.06] bg-black sm:h-72"
                     loading="lazy"
                     referrerpolicy="no-referrer-when-downgrade"
                 ></iframe>
@@ -249,7 +249,7 @@
         </div>
         <div class="grid gap-5 md:grid-cols-3">
             @foreach($latestPosts as $post)
-                <article class="group border border-white/10">
+                <article class="group border border-white/[.06]">
                     <a href="{{ route('blog.show', $post) }}" class="block overflow-hidden"><img src="{{ $post->getFeaturedImageUrl() }}" alt="Foto artikel {{ $post->title }}" class="aspect-[4/3] w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy"></a>
                     <div class="p-5">
                         <p class="text-[.6rem] uppercase tracking-[.2em] text-gold">{{ $post->blogCategory?->name }}</p>

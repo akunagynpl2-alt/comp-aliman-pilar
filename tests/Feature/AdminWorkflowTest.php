@@ -2,7 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\BlogPost;
 use App\Models\Category;
+use App\Models\Portfolio;
 use App\Models\Product;
 use App\Models\User;
 use Database\Seeders\CategorySeeder;
@@ -52,7 +54,97 @@ class AdminWorkflowTest extends TestCase
         ])->assertRedirect(route('admin.produk.index'));
 
         $this->assertDatabaseHas('products', ['slug' => 'tenda-serbaguna-contoh']);
-        $this->assertArrayNotHasKey('price', (new Product())->getFillable());
+        $this->assertArrayNotHasKey('price', (new Product)->getFillable());
+    }
+
+    public function test_admin_can_edit_and_delete_slug_routed_resources_by_id(): void
+    {
+        $this->withoutVite();
+        $admin = User::factory()->create(['role' => 'admin']);
+        $category = Category::create([
+            'name' => 'Audio',
+            'slug' => 'audio',
+            'is_active' => true,
+        ]);
+        $product = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Speaker Portable',
+            'slug' => 'speaker-portable',
+            'description' => 'Produk untuk acara.',
+        ]);
+        $portfolio = Portfolio::create([
+            'title' => 'Pameran Industri',
+            'slug' => 'pameran-industri',
+            'event_type' => 'Pameran',
+            'location' => 'Jakarta',
+            'event_date' => '2025-01-15',
+            'description' => 'Dokumentasi acara.',
+        ]);
+        $post = BlogPost::create([
+            'user_id' => $admin->id,
+            'title' => 'Panduan Acara',
+            'slug' => 'panduan-acara',
+            'content' => 'Konten artikel.',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.produk.edit', $product->getKey()))
+            ->assertOk();
+        $this->actingAs($admin)
+            ->put(route('admin.produk.update', $product->getKey()), [
+                'name' => 'Speaker Portable Baru',
+                'slug' => 'speaker-portable',
+                'category_id' => $category->id,
+                'description' => 'Produk yang diperbarui.',
+            ])
+            ->assertRedirect(route('admin.produk.index'));
+        $this->assertDatabaseHas('products', ['id' => $product->id, 'name' => 'Speaker Portable Baru']);
+        $this->actingAs($admin)
+            ->delete(route('admin.produk.destroy', $product->getKey()))
+            ->assertRedirect(route('admin.produk.index'));
+        $this->assertDatabaseMissing('products', ['id' => $product->id]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.portofolio.edit', $portfolio->getKey()))
+            ->assertOk();
+        $this->actingAs($admin)
+            ->put(route('admin.portofolio.update', $portfolio->getKey()), [
+                'title' => 'Pameran Diperbarui',
+                'event_type' => 'Pameran',
+                'location' => 'Jakarta',
+                'event_date' => '2025-01-15',
+                'description' => 'Dokumentasi acara yang diperbarui.',
+            ])
+            ->assertRedirect(route('admin.portofolio.index'));
+        $this->assertDatabaseHas('portfolios', ['id' => $portfolio->id, 'slug' => 'pameran-industri']);
+        $this->actingAs($admin)
+            ->delete(route('admin.portofolio.destroy', $portfolio->getKey()))
+            ->assertRedirect(route('admin.portofolio.index'));
+        $this->assertDatabaseMissing('portfolios', ['id' => $portfolio->id]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.blog.edit', $post->getKey()))
+            ->assertOk();
+        $this->actingAs($admin)
+            ->put(route('admin.blog.update', $post->getKey()), [
+                'title' => 'Panduan Acara Terbaru',
+                'content' => 'Konten artikel yang diperbarui.',
+            ])
+            ->assertRedirect(route('admin.blog.index'));
+        $this->assertDatabaseHas('blog_posts', ['id' => $post->id, 'slug' => 'panduan-acara']);
+        $this->actingAs($admin)
+            ->delete(route('admin.blog.destroy', $post->getKey()))
+            ->assertRedirect(route('admin.blog.index'));
+        $this->assertDatabaseMissing('blog_posts', ['id' => $post->id]);
+    }
+
+    public function test_testimonial_admin_endpoint_is_available_and_protected(): void
+    {
+        $this->withoutVite();
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->get(route('admin.testimoni.index'))->assertRedirect(route('admin.login'));
+        $this->actingAs($admin)->get(route('admin.testimoni.index'))->assertOk();
     }
 
     public function test_initial_catalog_covers_every_category_with_multiple_examples(): void

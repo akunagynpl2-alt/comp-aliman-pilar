@@ -1,12 +1,11 @@
 <?php
 
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\CatalogController;
-use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\BlogController;
-use App\Http\Controllers\PageController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ContactController;
-use App\Http\Controllers\WhatsappController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\PortfolioController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,21 +48,15 @@ Route::prefix('kontak')->name('contact.')->middleware('throttle:contact')->group
     Route::post('/', [ContactController::class, 'store'])->name('store');
 });
 
-// WhatsApp API
-Route::prefix('api/whatsapp')->name('whatsapp.')->group(function () {
-    Route::get('/numbers', [WhatsappController::class, 'numbers'])->name('numbers');
-    Route::post('/redirect', [WhatsappController::class, 'redirect'])->name('redirect');
-});
-
 // Sitemap & Robots
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', function () {
     return response(
-        "User-agent: *\nAllow: /\nSitemap: " . url('/sitemap.xml'),
+        "User-agent: *\nAllow: /\nSitemap: ".url('/sitemap.xml'),
         200,
         ['Content-Type' => 'text/plain']
     );
 });
 
 /* ===== ADMIN PANEL ===== */
-require __DIR__ . '/admin.php';
+require __DIR__.'/admin.php';

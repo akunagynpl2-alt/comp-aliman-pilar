@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BlogPost;
 use App\Models\BlogCategory;
-use Artesaos\SEOTools\Facades\SEOMeta;
+use App\Models\BlogPost;
 use Artesaos\SEOTools\Facades\OpenGraph;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Http\Request;
 
 class BlogController extends Controller
@@ -15,20 +15,20 @@ class BlogController extends Controller
         $query = BlogPost::with(['blogCategory', 'author'])->published();
 
         if ($request->filled('kategori')) {
-            $query->whereHas('blogCategory', fn($q) => $q->where('slug', $request->kategori));
+            $query->whereHas('blogCategory', fn ($q) => $q->where('slug', $request->kategori));
         }
 
         if ($request->filled('cari')) {
             $search = $request->cari;
-            $query->where(fn($q) => $q
+            $query->where(fn ($q) => $q
                 ->where('title', 'like', "%{$search}%")
                 ->orWhere('excerpt', 'like', "%{$search}%")
             );
         }
 
-        $posts      = $query->paginate(9)->withQueryString();
-        $categories = BlogCategory::withCount(['posts' => fn($q) => $q->published()])->get();
-        $featured   = BlogPost::with('blogCategory')->published()->whereRaw('is_featured IS TRUE')->first();
+        $posts = $query->paginate(9)->withQueryString();
+        $categories = BlogCategory::withCount(['posts' => fn ($q) => $q->published()])->get();
+        $featured = BlogPost::with('blogCategory')->published()->whereRaw('is_featured IS TRUE')->first();
 
         SEOMeta::setTitle('Blog & Tips Event | Aliman Pilar Production');
         SEOMeta::setDescription('Artikel dan tips seputar event organizer, sewa perlengkapan event, dan inspirasi acara dari pakarnya.');
@@ -38,7 +38,7 @@ class BlogController extends Controller
 
     public function show(BlogPost $blogPost)
     {
-        if (!$blogPost->is_published) {
+        if (! $blogPost->is_published || ! $blogPost->published_at || $blogPost->published_at->isFuture()) {
             abort(404);
         }
 
@@ -47,7 +47,7 @@ class BlogController extends Controller
             ->where('id', '!=', $blogPost->id)
             ->take(3)->get();
 
-        $title = ($blogPost->meta_title ?: $blogPost->title) . ' | Aliman Pilar Production';
+        $title = ($blogPost->meta_title ?: $blogPost->title).' | Aliman Pilar Production';
         SEOMeta::setTitle($title);
         SEOMeta::setDescription($blogPost->meta_description ?: $blogPost->excerpt);
         OpenGraph::setTitle($title);

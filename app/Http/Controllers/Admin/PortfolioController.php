@@ -46,13 +46,14 @@ class PortfolioController extends Controller
         return redirect()->route('admin.portofolio.index')->with('success', 'Portofolio berhasil ditambahkan.');
     }
 
-    public function edit(Portfolio $portfolio): View
+    public function edit(string $portfolio): View
     {
-        return $this->form($portfolio);
+        return $this->form(Portfolio::findOrFail($portfolio));
     }
 
-    public function update(Request $request, Portfolio $portfolio): RedirectResponse
+    public function update(Request $request, string $portfolio): RedirectResponse
     {
+        $portfolio = Portfolio::findOrFail($portfolio);
         $data = $this->validatedData($request, $portfolio);
         $images = $data['images'] ?? [];
         unset($data['images']);
@@ -62,15 +63,16 @@ class PortfolioController extends Controller
         return redirect()->route('admin.portofolio.index')->with('success', 'Portofolio berhasil diperbarui.');
     }
 
-    public function destroy(Portfolio $portfolio): RedirectResponse
+    public function destroy(string $portfolio): RedirectResponse
     {
-        $portfolio->delete();
+        Portfolio::findOrFail($portfolio)->delete();
 
         return redirect()->route('admin.portofolio.index')->with('success', 'Portofolio berhasil dihapus.');
     }
 
-    public function deleteMedia(Portfolio $portfolio, Media $media): RedirectResponse
+    public function deleteMedia(string $portfolio, Media $media): RedirectResponse
     {
+        $portfolio = Portfolio::findOrFail($portfolio);
         abort_unless(
             $media->model_id === $portfolio->id
             && $media->model_type === $portfolio::class
@@ -85,12 +87,18 @@ class PortfolioController extends Controller
 
     private function validatedData(Request $request, ?Portfolio $portfolio = null): array
     {
+        $slug = $request->input('slug');
+        if (! is_string($slug) || trim($slug) === '') {
+            $slug = $portfolio?->slug ?? Str::slug((string) $request->input('title', ''));
+        }
+        $request->merge(['slug' => $slug]);
+
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'alpha_dash', 'max:255', Rule::unique('portfolios', 'slug')->ignore($portfolio?->id)],
+            'slug' => ['required', 'alpha_dash', 'max:255', Rule::unique('portfolios', 'slug')->ignore($portfolio?->id)],
             'client' => ['nullable', 'string', 'max:255'],
             'event_type' => ['required', 'string', 'max:100'],
-            'event_date' => ['nullable', 'date'],
+            'event_date' => ['required', 'date'],
             'location' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string', 'max:5000'],
             'content' => ['nullable', 'string', 'max:10000'],
@@ -103,7 +111,6 @@ class PortfolioController extends Controller
             'images.*' => ['image', 'mimes:jpeg,png,webp', 'max:4096'],
         ]);
 
-        $data['slug'] = $data['slug'] ?: Str::slug($data['title']);
         $data['equipment_used'] = collect(preg_split('/\r\n|\r|\n/', $data['equipment_used'] ?? ''))
             ->map(fn ($item) => trim($item))
             ->filter()
@@ -149,6 +156,7 @@ class PortfolioController extends Controller
             'record' => $portfolio,
             'fields' => $fields,
             'routeName' => 'admin.portofolio',
+            'mediaItems' => $portfolio?->getMedia('images') ?? collect(),
         ]);
     }
 }

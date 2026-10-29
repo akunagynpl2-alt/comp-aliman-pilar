@@ -60,6 +60,7 @@
                     ['route' => 'admin.klien.index',      'icon' => 'users',     'label' => 'Klien'],
                     ['route' => 'admin.pesan.index',      'icon' => 'mail',      'label' => 'Pesan'],
                     ['route' => 'admin.whatsapp-nomor.index', 'icon' => 'phone', 'label' => 'WhatsApp'],
+                    ['route' => 'admin.whatsapp-template.index', 'icon' => 'file-text', 'label' => 'Template WhatsApp'],
                     ['route' => 'admin.pengaturan.index', 'icon' => 'settings',  'label' => 'Pengaturan'],
                 ];
                 // SVG path data untuk setiap icon
@@ -79,7 +80,8 @@
 
             @foreach ($menuItems as $item)
                 @php
-                    $isActive = request()->routeIs($item['route'] . '*');
+                    $activePattern = preg_replace('/\.index$/', '.*', $item['route']);
+                    $isActive = request()->routeIs($activePattern);
                     $path = $iconPaths[$item['icon']] ?? '';
                 @endphp
                 <a

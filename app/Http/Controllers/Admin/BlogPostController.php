@@ -49,13 +49,14 @@ class BlogPostController extends Controller
         return redirect()->route('admin.blog.index')->with('success', 'Artikel berhasil ditambahkan.');
     }
 
-    public function edit(BlogPost $blog): View
+    public function edit(string $blog): View
     {
-        return $this->form($blog);
+        return $this->form(BlogPost::findOrFail($blog));
     }
 
-    public function update(Request $request, BlogPost $blog): RedirectResponse
+    public function update(Request $request, string $blog): RedirectResponse
     {
+        $blog = BlogPost::findOrFail($blog);
         $data = $this->validatedData($request, $blog);
         $image = $data['featured_image'] ?? null;
         unset($data['featured_image']);
@@ -67,18 +68,24 @@ class BlogPostController extends Controller
         return redirect()->route('admin.blog.index')->with('success', 'Artikel berhasil diperbarui.');
     }
 
-    public function destroy(BlogPost $blog): RedirectResponse
+    public function destroy(string $blog): RedirectResponse
     {
-        $blog->delete();
+        BlogPost::findOrFail($blog)->delete();
 
         return redirect()->route('admin.blog.index')->with('success', 'Artikel berhasil dihapus.');
     }
 
     private function validatedData(Request $request, ?BlogPost $post = null): array
     {
+        $slug = $request->input('slug');
+        if (! is_string($slug) || trim($slug) === '') {
+            $slug = $post?->slug ?? Str::slug((string) $request->input('title', ''));
+        }
+        $request->merge(['slug' => $slug]);
+
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'alpha_dash', 'max:255', Rule::unique('blog_posts', 'slug')->ignore($post?->id)],
+            'slug' => ['required', 'alpha_dash', 'max:255', Rule::unique('blog_posts', 'slug')->ignore($post?->id)],
             'blog_category_id' => ['nullable', 'exists:blog_categories,id'],
             'excerpt' => ['nullable', 'string', 'max:500'],
             'content' => ['required', 'string', 'max:30000'],
@@ -91,7 +98,6 @@ class BlogPostController extends Controller
             'featured_image' => ['nullable', 'image', 'mimes:jpeg,png,webp', 'max:4096'],
         ]);
 
-        $data['slug'] = ($data['slug'] ?? '') ?: Str::slug($data['title']);
         $data['is_featured'] = $request->boolean('is_featured');
         $data['is_published'] = $request->boolean('is_published');
         if ($data['is_published'] && empty($data['published_at'])) {

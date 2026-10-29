@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Portfolio;
 use App\Models\WhatsappNumber;
-use Artesaos\SEOTools\Facades\SEOMeta;
 use Artesaos\SEOTools\Facades\OpenGraph;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Http\Request;
 
 class PortfolioController extends Controller
@@ -18,7 +18,7 @@ class PortfolioController extends Controller
             $query->where('event_type', $request->jenis);
         }
 
-        $portfolios  = $query->paginate(9)->withQueryString();
+        $portfolios = $query->paginate(9)->withQueryString();
         $eventTypes = Portfolio::query()
             ->whereRaw('is_active IS TRUE')
             ->whereNotNull('event_type')
@@ -35,13 +35,15 @@ class PortfolioController extends Controller
 
     public function show(Portfolio $portfolio)
     {
+        abort_unless($portfolio->is_active, 404);
+
         $whatsappNumbers = WhatsappNumber::active()->get();
         $relatedPortfolios = Portfolio::active()
             ->where('event_type', $portfolio->event_type)
             ->where('id', '!=', $portfolio->id)
             ->take(3)->get();
 
-        $title = ($portfolio->meta_title ?: $portfolio->title) . ' | Aliman Pilar Production';
+        $title = ($portfolio->meta_title ?: $portfolio->title).' | Aliman Pilar Production';
         SEOMeta::setTitle($title);
         SEOMeta::setDescription($portfolio->meta_description ?: $portfolio->description);
         OpenGraph::setTitle($title);

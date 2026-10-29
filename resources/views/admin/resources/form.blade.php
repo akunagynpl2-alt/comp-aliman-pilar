@@ -46,6 +46,28 @@
                 @error($fieldName)<p class="mt-2 text-xs text-red-300">{{ $message }}</p>@enderror
             </div>
         @endforeach
+        @if(isset($mediaItems) && $mediaItems->isNotEmpty())
+            <section class="space-y-4 border-t border-white/10 pt-6">
+                <h2 class="text-sm font-semibold text-white">Foto portofolio saat ini</h2>
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach($mediaItems as $media)
+                        <figure class="border border-white/10 bg-black/20 p-3">
+                            <img
+                                src="{{ $media->getUrl(config('media.conversions_enabled', true) ? 'thumb' : '') }}"
+                                alt="Foto portofolio {{ $record->title }}"
+                                class="aspect-[4/3] w-full object-cover"
+                                loading="lazy"
+                            >
+                            <form method="POST" action="{{ route('admin.portofolio.media.delete', [$record->getKey(), $media->getKey()]) }}" class="mt-3">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-sm text-red-300 hover:text-red-100" onclick="return confirm('Hapus foto ini?')">Hapus foto</button>
+                            </form>
+                        </figure>
+                    @endforeach
+                </div>
+            </section>
+        @endif
         <div class="flex flex-wrap gap-3 border-t border-white/10 pt-6">
             <button type="submit" class="btn-gold">Simpan</button>
             <a href="{{ route($routeName.'.index') }}" class="btn-outline-gold">Batal</a>
